@@ -89,6 +89,8 @@ const  App = () => {
     );
   }
 
+  console.log('filtered Persons', filteredPersons)
+
   return ( 
     <div>
       <h2>Phonebook</h2>
