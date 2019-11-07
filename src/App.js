@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useCallback, useRef} from 'react'
 import './App.css';
 import Person from './components/Person'
 import Filter from './components/Filter'
@@ -11,34 +11,37 @@ const  App = () => {
   const [newName, setNewName] = useState([])
   const [newNumber, setNewNumber] = useState([])
   const [filter, setNewFilter] = useState([])
-    
+
 
   // delete person by his ID using axios
-  const deletePersonId = (id) => {
-    const person = persons.find(p => p.id === id)
-    personService
-    .delPerson(id)
-    .then(response => {
-      setPersons(persons.map(person => person.id !==id ? person : response.data))
-      console.log(person)
-    })
-  }
+
+
+    const deletePersonId = (id) => {
+      const person = persons.find(p => p.id === id)
+      personService
+      .delPerson(id)
+      .then(response => {
+        setPersons(persons.filter(p => p.id !== id))
+        console.log(person)
+      })
+      .catch(error => {
+         if (error.response) {
+           console.log(error.response.data)
+         } 
+      }) 
+    }
+
+
 
   // effect hook for getting json data
   useEffect(() => {
-   
     personService
     .getAll()
     .then(response => {
       setPersons(response.data)
     })
+  
   }, [])
-
-
-  // if already in phonebook
-  if (persons.find(p => p.name === newName )) {
-     alert(`${newName} is already in the phonebook.` )
-  } 
 
   // adding new names using json data with axios
   const addName = (e) => {
@@ -56,13 +59,15 @@ const  App = () => {
     })
   }
 
+
   // maping persons and getting a list of persons
   const rows = () => persons.map(person => 
     <Person 
           key={person.id} 
           person={person}
           number={person.number} 
-          deletePerson={() => deletePersonId(person.id)}
+          onSubmit={addName}
+          deletePerson={() => window.confirm(`are you sure u want to delete '${person.name}'`, deletePersonId(person.id))}
           />
   )
   
@@ -80,7 +85,7 @@ const  App = () => {
   let filteredPersons = persons;
   if (filter) {
     filteredPersons = persons.filter(
-      p => p.name.indexOf(filter.concat('')) !== -1
+      p => p.name.toLocaleLowerCase().indexOf(filter.concat('')) !== -1
     );
   }
 
@@ -97,11 +102,16 @@ const  App = () => {
         </div>
         <div>{rows()}</div>
         <div>
-          <button type="submit">add</button>
+          <button type="submit">Add</button>
         </div>
       </form>
       <h2>Numbers</h2>
-      <div>{filteredPersons.map(person => <div key={person.id}>{person.id}. {person.name} / {person.number}</div>)}</div>
+      { <div>{filteredPersons.map(person => <div key={person.id}>
+                                              {person.id}. 
+                                              {person.name} / 
+                                              {person.number}
+                                          </div>)}
+      </div> }
       <p></p>
     </div>
   );

@@ -1,39 +1,24 @@
 {
   "persons": [
     {
-        "name": "Veljko Kukic",
-        "number": "55-93-938381",
-        "id": 1
-      },
-      {
-        "name": "Teodora Jovanovic",
-        "number": "55-93-938381",
-        "id": 2
-      },
-      {
-        "name": "Milica Aleksic",
-        "number": "55-93-938381",
-        "id": 3
-      },
-      {
-        "name": "Branko Tadic",
-        "number": "55-93-938381",
-        "id": 4
-      },
+      "name": "Veljko Kukic",
+      "number": "31-42-6614672",
+      "id": 1
+    },
     {
-      "name": "Ivana Stankovic",
-      "number": "55-93-938381",
+      "name": "Teodora Jovanovic",
+      "number": "34-65-14441",
+      "id": 2
+    },
+    {
+      "name": "Milica Aleksic",
+      "number": "94-65-419949",
+      "id": 3
+    },
+    {
+      "name": [],
+      "number": [],
       "id": 5
-    },
-    {
-      "name": "Milica Maric",
-      "number": "66-41-684818",
-      "id": 6
-    },
-    {
-      "name": "Katarina Sekulic",
-      "number": "56-47-715133",
-      "id": 7
     }
   ]
 }
