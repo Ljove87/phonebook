@@ -12,40 +12,8 @@ const  App = () => {
   const [newNumber, setNewNumber] = useState([])
   const [filter, setNewFilter] = useState([])
 
-  const checkUpdateExistingNumber = () => {
-    const personByName = persons.find(p => p.name === newName);
-    const personByNumber = persons.find(p => p.number === newNumber);
- 
-    if (!personByName && !personByNumber) {
-      return false;
-    }
-    if (
-      personByName &&
-      !window.confirm(
-        `Name ${newName} is already in the phonebook.\nDo you want to update the number to ${newNumber}?`
-      )
-    ) {
-      return false;
-    }
-    if (
-      personByNumber &&
-      !window.confirm(
-        `Number ${newNumber} is already in the phonebook.\nDo you want to update the name to ${newName}?`
-      )
-    ) {
-      return false;
-    }
-    const p = personByName || personByNumber;
-    const id = p.id;
-    personService
-      .update(id, { ...p, name: newName, number: newNumber })
-      .then(updatedPerson => {
-        setPersons(persons.map(p => (p.id !== id ? p : updatedPerson)));
-        setNewName("");
-        setNewNumber("");
-      })
-    return true;
-  };
+  // update request PUT
+  
  
 
   // delete person by his ID using axios
@@ -79,9 +47,7 @@ const  App = () => {
   // adding new names using json data with axios
   const addName = (e) => {
     e.preventDefault()
-    if (checkUpdateExistingNumber()) {
-      return;
-    }
+  
     const nameObject = {
       name: newName,
       number: newNumber,
