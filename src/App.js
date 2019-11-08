@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useRef} from 'react'
+import React, {useState, useEffect} from 'react'
 import './App.css';
 import Person from './components/Person'
 import Filter from './components/Filter'
@@ -14,20 +14,15 @@ const  App = () => {
 
 
   // delete person by his ID using axios
-
-
     const deletePersonId = (id) => {
-      const person = persons.find(p => p.id === id)
+      const current = persons.find(p => p.id === id)
       personService
       .delPerson(id)
       .then(response => {
         setPersons(persons.filter(p => p.id !== id))
-        console.log(person)
       })
       .catch(error => {
-         if (error.response) {
-           console.log(error.response.data)
-         } 
+      console.log(error)
       }) 
     }
 
@@ -39,6 +34,9 @@ const  App = () => {
     .getAll()
     .then(response => {
       setPersons(response.data)
+    })
+    .catch(error => {
+      console.log(error)
     })
   
   }, [])
@@ -55,7 +53,6 @@ const  App = () => {
     .create(nameObject)
     .then(response => {
       setPersons(persons.concat(response.data))
-      setNewName('')
     })
   }
 
@@ -67,7 +64,7 @@ const  App = () => {
           person={person}
           number={person.number} 
           onSubmit={addName}
-          deletePerson={() => window.confirm(`are you sure u want to delete '${person.name}'`, deletePersonId(person.id))}
+          deletePerson={() => (window.confirm(`Are you sure you want to delete ${person.name}`), deletePersonId(person.id))}
           />
   )
   
@@ -88,8 +85,6 @@ const  App = () => {
       p => p.name.toLocaleLowerCase().indexOf(filter.concat('')) !== -1
     );
   }
-
-  console.log('filtered Persons', filteredPersons)
 
   return ( 
     <div>
