@@ -12,17 +12,52 @@ const  App = () => {
   const [newNumber, setNewNumber] = useState([])
   const [filter, setNewFilter] = useState([])
 
+  const checkUpdateExistingNumber = () => {
+    const personByName = persons.find(p => p.name === newName);
+    const personByNumber = persons.find(p => p.number === newNumber);
+ 
+    if (!personByName && !personByNumber) {
+      return false;
+    }
+    if (
+      personByName &&
+      !window.confirm(
+        `Name ${newName} is already in the phonebook.\nDo you want to update the number to ${newNumber}?`
+      )
+    ) {
+      return false;
+    }
+    if (
+      personByNumber &&
+      !window.confirm(
+        `Number ${newNumber} is already in the phonebook.\nDo you want to update the name to ${newName}?`
+      )
+    ) {
+      return false;
+    }
+    const p = personByName || personByNumber;
+    const id = p.id;
+    personService
+      .update(id, { ...p, name: newName, number: newNumber })
+      .then(updatedPerson => {
+        setPersons(persons.map(p => (p.id !== id ? p : updatedPerson)));
+        setNewName("");
+        setNewNumber("");
+      })
+    return true;
+  };
+ 
 
   // delete person by his ID using axios
     const deletePersonId = (id) => {
-      const current = persons.find(p => p.id === id)
       personService
       .delPerson(id)
       .then(response => {
         setPersons(persons.filter(p => p.id !== id))
+        console.log(response)
       })
       .catch(error => {
-      console.log(error)
+      console.log(error.response)
       }) 
     }
 
@@ -36,7 +71,7 @@ const  App = () => {
       setPersons(response.data)
     })
     .catch(error => {
-      console.log(error)
+      console.log(error.response)
     })
   
   }, [])
@@ -44,6 +79,9 @@ const  App = () => {
   // adding new names using json data with axios
   const addName = (e) => {
     e.preventDefault()
+    if (checkUpdateExistingNumber()) {
+      return;
+    }
     const nameObject = {
       name: newName,
       number: newNumber,
@@ -53,18 +91,20 @@ const  App = () => {
     .create(nameObject)
     .then(response => {
       setPersons(persons.concat(response.data))
+      setNewName('')
+      setNewNumber('')
     })
   }
 
 
   // maping persons and getting a list of persons
-  const rows = () => persons.map(person => 
+  const rows = () => persons.map(p => 
     <Person 
-          key={person.id} 
-          person={person}
-          number={person.number} 
+          key={p.id} 
+          person={p}
+          number={p.number} 
           onSubmit={addName}
-          deletePerson={() => (window.confirm(`Are you sure you want to delete ${person.name}`), deletePersonId(person.id))}
+          deletePerson={() => (deletePersonId(p.id))}
           />
   )
   
