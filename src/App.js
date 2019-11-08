@@ -68,9 +68,8 @@ const  App = () => {
     <Person 
           key={p.id} 
           person={p}
-          number={p.number} 
-          onSubmit={addName}
-          deletePerson={() => (deletePersonId(p.id))}
+          number={p.number}    
+          deletePerson={(id) => (deletePersonId(id))}
           />
   )
   
@@ -85,12 +84,12 @@ const  App = () => {
   }
 
   // filter persons with input element
-  let filteredPersons = persons;
-  if (filter) {
-    filteredPersons = persons.filter(
-      p => p.name.toLocaleLowerCase().indexOf(filter.concat('')) !== -1
-    );
-  }
+  // let filteredPersons = persons;
+  // if (filter) {
+  //   filteredPersons = persons.filter(
+  //     p => p.name.toLocaleLowerCase().indexOf(filter.concat('')) !== -1
+  //   );
+  // }
 
   return ( 
     <div>
@@ -109,12 +108,12 @@ const  App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      { <div>{filteredPersons.map(person => <div key={person.id}>
+      {/* { <div>{filteredPersons.map(person => <div key={person.id}>
                                               {person.id}. 
                                               {person.name} / 
                                               {person.number}
-                                          </div>)}
-      </div> }
+                                          </div>)} */}
+      {/* </div> }   */}
       <p></p>
     </div>
   );
