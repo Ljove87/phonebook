@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react'
 import './App.css';
 import Person from './components/Person'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 
 import personService from './services/persons'
 
@@ -11,21 +12,61 @@ const  App = () => {
   const [newName, setNewName] = useState([])
   const [newNumber, setNewNumber] = useState([])
   const [filter, setNewFilter] = useState([])
+  const [errorMsg, setErrorMsg] = useState('')
 
   // update request PUT
-  
- 
+  const updatePersonAndNumber = () => {
+    const personNewName = persons.find(p => p.name === newName)
+    const personNewNumber = persons.find(n => n.number === newNumber)
+
+    if (!personNewName && !personNewNumber) {
+      return false;
+    };
+    if (
+      personNewName &&
+      !window.confirm(
+        `Name ${newName} is already in the phonebook.\nDo you want to update the number to ${newNumber}?`
+      )
+    ) {
+      return false;
+    }
+    if (
+      personNewNumber &&
+      !window.confirm(
+        `Number ${newNumber} is already in the phonebook.\nDo you want to update the name to ${newName}?`
+      )
+    ) {
+      return false;
+    }
+    const p = personNewName || personNewNumber;
+    const id = p.id;
+    console.log('UpdatePersons', p)
+
+    personService
+    .update(id, {...p, name:newName, number:newNumber})
+    .then(updatedPerson => {
+      setPersons(persons.map(p => (p.id !== id ? p : updatedPerson)));
+      setNewName('');
+      setNewNumber('');
+    })
+    .catch(error => {
+      console.log(error.response);
+    })
+    return true;
+  };
 
   // delete person by his ID using axios
     const deletePersonId = (id) => {
+      console.log('delete person')
       personService
       .delPerson(id)
       .then(response => {
         setPersons(persons.filter(p => p.id !== id))
         console.log(response)
+        console.log('deletePersonId')
       })
       .catch(error => {
-      console.log(error.response)
+        console.log(error.response)
       }) 
     }
 
@@ -33,13 +74,16 @@ const  App = () => {
 
   // effect hook for getting json data
   useEffect(() => {
+    console.log('UseEffect, getAllRequest')
     personService
     .getAll()
     .then(response => {
       setPersons(response.data)
+      console.log('promise fullfiled')
     })
     .catch(error => {
       console.log(error.response)
+      console.log('error')
     })
   
   }, [])
@@ -47,7 +91,10 @@ const  App = () => {
   // adding new names using json data with axios
   const addName = (e) => {
     e.preventDefault()
-  
+    if(updatePersonAndNumber()) {
+      return;
+    }
+    console.log('addName')
     const nameObject = {
       name: newName,
       number: newNumber,
@@ -56,9 +103,19 @@ const  App = () => {
     personService
     .create(nameObject)
     .then(response => {
+      if(typeof(response) === 'undefined')
+        setErrorMsg(["Number already deleted, please refresh to reflect",false])
+      else
+        setErrorMsg(["Added new name ", newName, " with a number", newNumber ,true])
+        setPersons(persons.map(person=>(person.id===response.id)?response:person))
+              
       setPersons(persons.concat(response.data))
       setNewName('')
       setNewNumber('')
+      console.log('addedNewName')
+    })
+    .catch(error => {
+      console.log(error.response)
     })
   }
 
@@ -69,8 +126,7 @@ const  App = () => {
           key={p.id} 
           person={p}
           number={p.number} 
-          onSubmit={addName}
-          deletePerson={() => (deletePersonId(p.id))}
+          deletePerson={(id) => (deletePersonId(id))}
           />
   )
   
@@ -95,6 +151,7 @@ const  App = () => {
   return ( 
     <div>
       <h2>Phonebook</h2>
+      <Notification  message={errorMsg}/>
       <Filter onChange={setNewFilter} value={filter}  />
       <form onSubmit={addName}>
         <div>

@@ -1,0 +1,8 @@
+post http://localhost:3001/persons
+
+Content-Content-Type: application/json
+
+{
+    "name": "Milica Aleksic",
+    "phone": "31-55-494",
+}

@@ -1,0 +1,19 @@
+{
+  "persons": [
+    {
+      "name": "Veljko Kukic",
+      "number": "31-41-55514",
+      "id": 1
+    },
+    {
+      "name": "Teodora Jovanovic",
+      "number": "34-65-14441",
+      "id": 2
+    },
+    {
+      "name": "Milica Aleksic",
+      "number": "94-65-419949",
+      "id": 3
+    }
+  ]
+}
