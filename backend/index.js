@@ -1,10 +1,17 @@
+require('dotenv').config()
+
 const http = require('http')
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const mongoose = require('mongoose')
 
 
+
+const Person = require('./models/person')
+
+app.use(express.static('build'))
 app.use(bodyParser.json())
 app.use(cors())
 
@@ -19,25 +26,18 @@ const requestLogger = (request, response, next) => {
 app.use(requestLogger)
 
 
-let persons = [
-    {
-        "name": "Teodora Jovanovic",
-        "number": "31-151-51",
-        "id": 1
-      },
-      {
-        "name": "Veljko Kukic",
-        "number": "61-614-31",
-        "id": 2
-      }
-]
+
+
 
 app.get('/', (req, res) => {
     res.send('<h1>Hello World</h1>')
 })
 
-app.get('/persons', (req, res) => {
-    res.json(persons)
+app.get('/api/persons', (req, res) => {
+    Person.find({})
+    .then(person => {
+        res.json(person.map(p => p.toJSON()))
+    })
 })
 
 app.get('/info', (req, res) => {
@@ -106,7 +106,7 @@ app.post('/persons', (req, res) => {
 
 
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
