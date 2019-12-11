@@ -13,7 +13,7 @@ const  App = () => {
   const [newNumber, setNewNumber] = useState([])
   const [filter, setNewFilter] = useState([])
   const [errorMsg, setErrorMsg] = useState('')
-
+ 
   // update request PUT
   const updatePersonAndNumber = () => {
     const personNewName = persons.find(p => p.name === newName)
@@ -59,7 +59,7 @@ const  App = () => {
     const deletePersonId = (id) => {
       console.log('delete person')
       personService
-      .delPerson(id)
+      .del(id)
       .then(response => {
         setPersons(persons.filter(p => p.id !== id))
         console.log(response)
@@ -98,16 +98,15 @@ const  App = () => {
     const nameObject = {
       name: newName,
       number: newNumber,
-      id: persons.length + 1
     }
     personService
     .create(nameObject)
     .then(response => {
-      if(typeof(response) === 'undefined')
-        setErrorMsg(["Number already deleted, please refresh to reflect",false])
+      if(typeof(response) === 'undefined') 
+        setErrorMsg(["Number already deleted, please refresh to reflect", false])
       else
-        setErrorMsg(["Added new name ", newName, " with a number", newNumber ,true])
-        setPersons(persons.map(person=>(person.id===response.id)?response:person))
+        setErrorMsg(["Added new name ", newName, " with a number", newNumber, true])
+        setPersons(persons.map(person => (person.id === response.id) ? response : person))
               
       setPersons(persons.concat(response.data))
       setNewName('')
@@ -123,12 +122,13 @@ const  App = () => {
   // maping persons and getting a list of persons
   const rows = () => persons.map(p => 
     <Person 
-          key={p.id} 
-          person={p}
-          number={p.number} 
-          deletePerson={(id) => (deletePersonId(id))}
-          />
+        key={p.id} 
+        person={p}
+        number={p.number} 
+        deletePerson={(id) => (deletePersonId(id))}
+    />     
   )
+
   
   // add button event
   const handleAdd = (event) => {
@@ -141,12 +141,12 @@ const  App = () => {
   }
 
   // filter persons with input element
-  let filteredPersons = persons;
-  if (filter) {
-    filteredPersons = persons.filter(
-      p => p.name.toLocaleLowerCase().indexOf(filter.concat('')) !== -1
-    );
-  }
+   let filteredPersons = persons;
+   if (filter) {
+     filteredPersons = persons.filter(
+       p => p.name.toLocaleLowerCase().indexOf(filter.concat('')) !== -1
+     );
+   }
 
   return ( 
     <div>
@@ -166,11 +166,14 @@ const  App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      { <div>{filteredPersons.map(person => <div key={person.id}>
-                                              {person.name} / 
-                                              {person.number}
-                                          </div>)}
-      </div> }
+      {<div>
+      {filteredPersons.map(person => 
+      <div 
+        key={person.id}>
+        {person.name} / 
+        {person.number}
+      </div>)}
+      </div>}
       <p></p>
     </div>
   );

@@ -1,14 +1,9 @@
 require('dotenv').config()
 
-const http = require('http')
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
-const mongoose = require('mongoose')
-
-
-
 const Person = require('./models/person')
 
 app.use(express.static('build'))
@@ -40,33 +35,24 @@ app.get('/info', (req, res) => {
 
 })
 
-app.get('/api/person/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(p => p.id === id)
-
-    if (person) {
-        res.json(person)
-    } else {
-        res.status(404).end()
-    }
-   
+app.get('/api/persons/:id', (req, res) => {
+   Person
+   .findById(req.params.id)
+   .then(person => person ? res.json(person.toJSON()) : res.status(404).end())
+   .catch(e => next(e))
 })
 
-app.delete('/api/person/:id', (req,res) => {
-    const id = Number(req.params.id)
-    person = persons.find(p => p.id !== id)
-    console.log(person)
-    res.status(204).end()
+app.delete('/api/persons/:id', (req,res,next) => {
+    Person.findByIdAndRemove(req.params.id)
+    .then(() => {
+        res.status(204).end()
+      })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (req, res) => {
 
     const body = req.body
-
-    const generateId = () => {
-            const maxId = persons.length > 0 ? Math.max(...persons.map(p => p.id)) : 0
-        return maxId + Math.random() + 1
-    }
 
     if (!body.name) {
          return res.status(400).json({
@@ -78,23 +64,24 @@ app.post('/api/persons', (req, res) => {
          })
     } 
 
-    const name = req.body.name
-     if (body.name === name ) {
-         return res.status(400).json({
-             error: 'that name is already in persons list'
-         })
-     }
+    //  const name = req.body.name
+    //   if (body.name === name ) {
+    //       return res.status(400).json({
+    //           error: 'that name is already in persons list'
+    //       })
+    //   }
     
 
-    const person =  {
+    const person = new Person ({
         name: body.name,
         number: body.number,
-        id: generateId(),
-    }
+    });
     
-    persons = persons.concat(person)
-
-    res.json(person)
+    person
+    .save()
+    .then(savedPerson => {
+        res.json(savedPerson.toJSON());
+    })
 })
 
 

@@ -6,9 +6,10 @@ const getAll = () => {
     return axios.get(baseUrl)
 }
 
-const create = newPerson => {
-    return axios.post(baseUrl, newPerson)
-}
+const create = async newObject => {
+    const response = await axios.post(baseUrl, newObject)
+    return response.data
+  }
 
 const update = async (id, newPerson) => {
     const request = axios.put(`${baseUrl}/${id}`, newPerson)
@@ -16,8 +17,6 @@ const update = async (id, newPerson) => {
     return response.data
   }
 
-const delPerson = id => {
-    return axios.delete(`${baseUrl}/${id}`)
-}
+const del = id => axios.delete(`${baseUrl}/${id}`);
 
-export default {getAll, create, update, delPerson}
+export default {getAll, create, update, del}
