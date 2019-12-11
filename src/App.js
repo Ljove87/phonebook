@@ -122,11 +122,11 @@ const  App = () => {
   // maping persons and getting a list of persons
   const rows = () => persons.map(p => 
     <Person 
-        key={p.id} 
-        person={p}
-        number={p.number} 
-        deletePerson={(id) => (deletePersonId(id))}
-    />     
+          key={p.id} 
+          person={p}
+          number={p.number}    
+          deletePerson={(id) => (deletePersonId(id))}
+          />
   )
 
   
