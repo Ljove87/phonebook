@@ -167,7 +167,6 @@ const  App = () => {
       </form>
       <h2>Numbers</h2>
       { <div>{filteredPersons.map(person => <div key={person.id}>
-                                              {person.id}. 
                                               {person.name} / 
                                               {person.number}
                                           </div>)}
