@@ -27,12 +27,6 @@ app.use(requestLogger)
 
 
 
-
-
-app.get('/', (req, res) => {
-    res.send('<h1>Hello World</h1>')
-})
-
 app.get('/api/persons', (req, res) => {
     Person.find({})
     .then(person => {
@@ -46,7 +40,7 @@ app.get('/info', (req, res) => {
 
 })
 
-app.get('/person/:id', (req, res) => {
+app.get('/api/person/:id', (req, res) => {
     const id = Number(req.params.id)
     const person = persons.find(p => p.id === id)
 
@@ -58,14 +52,14 @@ app.get('/person/:id', (req, res) => {
    
 })
 
-app.delete('/person/:id', (req,res) => {
+app.delete('/api/person/:id', (req,res) => {
     const id = Number(req.params.id)
     person = persons.find(p => p.id !== id)
     console.log(person)
     res.status(204).end()
 })
 
-app.post('/persons', (req, res) => {
+app.post('/api/persons', (req, res) => {
 
     const body = req.body
 
