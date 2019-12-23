@@ -8,16 +8,17 @@ import personService from './services/persons'
 
 const  App = () => {
 
-  const [persons, setPersons] = useState([])
-  const [newName, setNewName] = useState([])
-  const [newNumber, setNewNumber] = useState([])
-  const [filter, setNewFilter] = useState([])
-  const [errorMsg, setErrorMsg] = useState('')
- 
+
+  const [persons, setPersons] = useState([]);
+  const [newName, setNewName] = useState([]);
+  const [newNumber, setNewNumber] = useState([]);
+  const [filter, setNewFilter] = useState([]);
+  const [errorMsg, setErrorMsg] = useState('');
+
   // update request PUT
   const updatePersonAndNumber = () => {
-    const personNewName = persons.find(p => p.name === newName)
-    const personNewNumber = persons.find(n => n.number === newNumber)
+    const personNewName = persons.find(p => p.name === newName);
+    const personNewNumber = persons.find(n => n.number === newNumber);
 
     if (!personNewName && !personNewNumber) {
       return false;
@@ -40,7 +41,6 @@ const  App = () => {
     }
     const p = personNewName || personNewNumber;
     const id = p.id;
-    console.log('UpdatePersons', p)
 
     personService
     .update(id, {...p, name:newName, number:newNumber})
@@ -62,8 +62,6 @@ const  App = () => {
       .del(id)
       .then(response => {
         setPersons(persons.filter(p => p.id !== id))
-        console.log(response)
-        console.log('deletePersonId')
       })
       .catch(error => {
         console.log(error.response)
@@ -74,18 +72,17 @@ const  App = () => {
 
   // effect hook for getting json data
   useEffect(() => {
-    console.log('UseEffect, getAllRequest')
+
     personService
     .getAll()
     .then(response => {
       setPersons(response.data)
-      console.log('promise fullfiled')
+
     })
     .catch(error => {
       console.log(error.response)
       console.log('error')
     })
-  
   }, [])
 
   // adding new names using json data with axios
@@ -95,26 +92,29 @@ const  App = () => {
       return;
     }
     console.log('addName')
-    const nameObject = {
+    const newPerson = {
       name: newName,
       number: newNumber,
+      id: persons.length + 1
     }
     personService
-    .create(nameObject)
-    .then(response => {
-      if(typeof(response) === 'undefined') 
-        setErrorMsg(["Number already deleted, please refresh to reflect", false])
-      else
-        setErrorMsg(["Added new name ", newName, " with a number", newNumber, true])
-        setPersons(persons.map(person => (person.id === response.id) ? response : person))
-              
-      setPersons(persons.concat(response.data))
+    .create(newPerson)
+    .then(newPerson => {   
+      setPersons(persons.concat(newPerson))
       setNewName('')
       setNewNumber('')
       console.log('addedNewName')
+      setErrorMsg(`Successefuly added ${newName}`)
+      setTimeout(() => {
+        setErrorMsg(null)
+      }, 5000)
     })
     .catch(error => {
-      console.log(error.response)
+      setErrorMsg(`Person validation failed, name or phonenumber must be minimum 5 characters long`)
+      setTimeout(() => {
+        setErrorMsg(null)
+      }, 5000)
+      console.log(error)
     })
   }
 
@@ -122,14 +122,13 @@ const  App = () => {
   // maping persons and getting a list of persons
   const rows = () => persons.map(p => 
     <Person 
-          key={p.id} 
-          person={p}
-          number={p.number}    
-          deletePerson={(id) => (deletePersonId(id))}
-          />
+        key={p.id} 
+        person={p}
+        number={p.number} 
+        deletePerson={(id) => (deletePersonId(id))}
+    />     
   )
 
-  
   // add button event
   const handleAdd = (event) => {
     setNewName(event.target.value)
@@ -144,37 +143,48 @@ const  App = () => {
    let filteredPersons = persons;
    if (filter) {
      filteredPersons = persons.filter(
-       p => p.name.toLocaleLowerCase().indexOf(filter.concat('')) !== -1
+       p => p.name.toLowerCase().indexOf(filter.concat('')) !== -1
      );
    }
 
   return ( 
-    <div>
+    <div className="container">
       <h2>Phonebook</h2>
       <Notification  message={errorMsg}/>
-      <Filter onChange={setNewFilter} value={filter}  />
-      <form onSubmit={addName}>
-        <div>
-          name: <input onChange={handleAdd} value={newName}/>
+      
+      <div className="pt-3">
+        <form onSubmit={addName}>
+          <div className="form-add">
+            <div className="pb-3">
+              <label htmlFor="name">Name</label> 
+              <input type="text" onChange={handleAdd} value={newName} placeholder="Enter name..."/>
+            </div>
+            <div className="pb-3">
+              <label htmlFor="number">Number</label>
+              <input type="text" onChange={addNumber} value={newNumber} placeholder="Enter number..."/>
+            </div>
+          </div>
+          <div>
+            <button type="submit" className="btn btn-primary button-font">Add Name</button>
+          </div>
+          <div className="phonebook-list">{rows()}</div>
+         
+        </form>
+      </div>
+
+        <div className="filter">
+          <h2>Numbers</h2>
+          <Filter onChange={setNewFilter} value={filter}  />
+            {<div>
+            {filteredPersons.map(person => 
+            <div key={person.id}>
+              <div className="row filter-persons">
+                <div className="col-md-3">{person.name} </div>
+                <div className="col-md-3">{person.number}</div>
+              </div>
+            </div>)}
+          </div>}
         </div>
-        <div>
-          number: <input onChange={addNumber} value={newNumber}/>
-        </div>
-        <div>{rows()}</div>
-        <div>
-          <button type="submit">Add</button>
-        </div>
-      </form>
-      <h2>Numbers</h2>
-      {<div>
-      {filteredPersons.map(person => 
-      <div 
-        key={person.id}>
-        {person.name} / 
-        {person.number}
-      </div>)}
-      </div>}
-      <p></p>
     </div>
   );
 }

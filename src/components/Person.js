@@ -3,11 +3,21 @@ import React from 'react';
 
 const Person = ({person, deletePerson }) => {
     return (
-        <div>
-            {person.id}...{person.name} --- {person.number}
-            <button type="button" onClick={() => {
-            deletePerson(person.id)}
-        }> DELETE</button>
+        <div className="mb-2">
+            <div className="row border-list">  
+                <div className="col-md-10 persons">
+                 {person.name}  {person.number}
+                </div>
+
+                <div className="col-md-2">
+                <button type="button" className="btn btn-danger button-font" onClick={() => {
+                deletePerson(person.id)}}>Delete</button>
+                
+                </div>
+
+            </div>
+         
+          
         </div>
     )
 }

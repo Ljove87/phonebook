@@ -35,7 +35,7 @@ app.get('/info', (req, res) => {
 
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
    Person
    .findById(req.params.id)
    .then(person => person ? res.json(person.toJSON()) : res.status(404).end())
@@ -50,7 +50,9 @@ app.delete('/api/persons/:id', (req,res,next) => {
     .catch(error => next(error))
 })
 
-app.post('/api/persons', (req, res) => {
+
+// create person in phonebook
+app.post('/api/persons', (req, res, next) => {
 
     const body = req.body
 
@@ -62,14 +64,7 @@ app.post('/api/persons', (req, res) => {
          return res.status(400).json({
             error: 'number is missing'
          })
-    } 
-
-    //  const name = req.body.name
-    //   if (body.name === name ) {
-    //       return res.status(400).json({
-    //           error: 'that name is already in persons list'
-    //       })
-    //   }
+    }
     
 
     const person = new Person ({
@@ -82,10 +77,42 @@ app.post('/api/persons', (req, res) => {
     .then(savedPerson => {
         res.json(savedPerson.toJSON());
     })
+    .catch(error => next(error))
 })
 
+app.put('/api/persons/:id', (req, res, next) => {
+    const body = req.body;
 
+    const person = {
+        name: body.name,
+        number: body.number,
+    }
 
+    Person
+        .findByIdAndUpdate(req.params.id, person, { new: true })
+        .then(updatedPerson => res.json(updatedPerson.toJSON()))
+        .catch(e => next(e))
+})
+
+const unknownEndpoint = (req, res) => {
+    res.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint);
+
+const errorHandler = (error, req, res, next) => {
+    console.log(error.message);
+    if (error.name === 'CastError' && error.kind === 'ObjectID') {
+        return res.status(404).send({ error: 'Malformatted ID' })
+    } else if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
+      }
+    
+
+    next(error);
+}
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {

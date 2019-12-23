@@ -6,8 +6,8 @@ const getAll = () => {
     return axios.get(baseUrl)
 }
 
-const create = async newObject => {
-    const response = await axios.post(baseUrl, newObject)
+const create = async newPerson => {
+    const response = await axios.post(baseUrl, newPerson)
     return response.data
   }
 

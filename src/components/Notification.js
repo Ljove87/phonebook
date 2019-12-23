@@ -1,15 +1,26 @@
 import React from "react";
 
-const Notificaiton = ({message}) => {
-    if(message === null) {
+const Notificaiton = ({message, isError}) => {
+
+    if(!message) {
         return null
     }    
     
     return (
-        <div className="error">
-            {message}
+        <div
+          style={{
+            color: isError ? "red" : "green",
+            border: "0.2em solid currentColor",
+            borderRadius: "0.3em",
+            fontSize: "125%",
+            padding: "0.3em 0.5em",
+            backgroundColor: "white",
+            margin: "0.5em 0.5em"
+          }}
+        >
+          {message}
         </div>
-    )
-}
+      );
+    };
 
 export default Notificaiton
