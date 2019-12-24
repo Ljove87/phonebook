@@ -23,7 +23,7 @@ const personSchema = new mongoose.Schema({
     number: {
         type: String,
         minlength: 5,
-        maxlength: 12,
+        maxlength: 15,
         unique: true
     },
     date: Date,
