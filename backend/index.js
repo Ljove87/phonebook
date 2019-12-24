@@ -114,7 +114,7 @@ const errorHandler = (error, req, res, next) => {
 
 app.use(errorHandler);
 
-const PORT = process.env.PORT
+const PORT = process.env.MONGODB_URI
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
